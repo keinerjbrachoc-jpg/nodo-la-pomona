@@ -170,6 +170,7 @@ table.q td{padding:5px 6px;border-bottom:1px solid var(--grid);vertical-align:mi
 table.q td.num,table.q th.num{text-align:right}
 table.q .grp td{background:var(--surface-2);font:600 12px var(--f-body);color:var(--ink);padding:7px 6px}
 table.q input{padding:5px 6px;font-size:13px;text-align:right;width:82px}
+table.q .inc input{width:16px;padding:0}
 table.q .nm small{display:block;color:var(--muted);font-size:11.5px}
 .ov{color:var(--amber)}
 .inc{display:flex;gap:8px;align-items:flex-start;cursor:pointer}.inc input{width:16px;height:16px;margin-top:2px;accent-color:var(--accent);flex:none}
@@ -212,15 +213,22 @@ table.q tr.off td{opacity:.45}table.q tr.off td.nm{opacity:.6}table.q tr.off .in
   .facts{grid-template-columns:minmax(0,1fr)}
   .brand p{display:none}
   .view{height:52vh}
+  .tblwrap{margin:0;padding:0}
+  .chip>span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .chip{padding:6px}
+  .brand h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+@media (min-width:980px){.tblwrap{margin:0;padding:0}}
+.tblwrap{container-type:inline-size}
+@container (max-width:520px){
   table.q{min-width:0}table.q thead{display:none}
   table.q tbody,table.q tr,table.q td{display:block}
   table.q tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 8px;padding:8px 0;border-bottom:1px solid var(--grid)}
   table.q td{border:0;padding:0}table.q td.nm{grid-column:1/-1}
   table.q td[data-l]::before{content:attr(data-l);display:block;font:11px var(--f-body);color:var(--muted);text-align:left}
-  table.q td.num{text-align:left}table.q input{width:100%;text-align:left}
+  table.q td.num{text-align:left}table.q input[type=number]{width:100%;text-align:left}
   table.q .grp{display:flex;justify-content:space-between;background:var(--surface-2);padding:0;border-radius:6px}
   table.q .grp td{background:none}
-  .tblwrap{margin:0;padding:0}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -545,7 +553,7 @@ const LOCAL=!(window.claude&&window.claude.use);const LKEY='astralink-nodo-pomon
 function saveLocal(){clearTimeout(lsT);lsT=setTimeout(()=>{try{localStorage.setItem(LKEY,JSON.stringify(S));}catch(e){if(!lsWarned){lsWarned=true;toast('El navegador no tiene espacio para guardar todo (las fotos ocupan mucho). Usa "Exportar diseño" para no perderlo.',9000);}}},500);}
 function loadLocal(){try{const t=localStorage.getItem(LKEY);return t?JSON.parse(t):null;}catch(e){return null;}}
 function setSync(k){const el=$('#sync');const M={local:['',LOCAL?'Guardado en este navegador':'Solo en esta pantalla'],loading:['pend','Cargando diseño…'],slow:['bad','Sin conexión con el guardado'],pend:['pend','Guardando…'],saved:['ok','Guardado y compartido'],ro:['','Solo lectura'],error:['bad','No se pudo guardar']};
-  const v=M[k]||M.local;el.className='chip '+v[0];el.querySelector('span').textContent=v[1];}
+  const v=M[k]||M.local;el.className='chip '+v[0];el.querySelector('span').textContent=v[1];el.title=v[1];}
 function commit(opts){S.v=1;renderAll(opts);if(docRef&&canWrite){dirty=true;setSync('pend');clearTimeout(saveT);saveT=setTimeout(flush,700);}else if(!docRef)saveLocal();}
 async function flush(){if(saving){saveT=setTimeout(flush,400);return;}saving=true;dirty=false;const rev=uid();lastRev=rev;S.rev=rev;
   const data=JSON.parse(JSON.stringify(Object.assign({},S,{photos:S.photos.filter(p=>!p.local),updatedAt:new Date().toISOString()})));
